@@ -46,18 +46,19 @@ const partition = (arr, l, r, pivotSelection) => {
 
 
 const parseData = require('../parseData');
+const rawDataFile = 'week3-assignment.txt';
 
 // #1
-let input = parseData('module-01/week3-assignment.txt');
+let input = parseData(rawDataFile);
 console.log(input, input.length);
 console.log(quickSortComparisons(input, 'first', {count: 0}));
 
 // #2
-input = parseData('module-01/week3-assignment.txt');
+input = parseData(rawDataFile);
 console.log(input, input.length);
 console.log(quickSortComparisons(input, 'last', {count: 0}));
 
 // #3
-input = parseData('module-01/week3-assignment.txt');
+input = parseData(rawDataFile);
 console.log(input, input.length);
 console.log(quickSortComparisons(input, 'median', {count: 0}));
