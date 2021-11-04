@@ -54,15 +54,8 @@ const countSplitInversions = (input, sortedLeftArr, sortedRightArr) => {
 }
 
 
-
-const fs =  require('fs');
-
-const nums = fs.readFileSync(`${__dirname}/week2-assignment.txt`, 'utf-8');
-const input = nums.split('\r\n');
-input.pop();
-for (let i = 0; i < input.length; i++) {
-  input[i] = Number(input[i]);
-}
+const parseData = require('../parseData');
+const input = parseData('module-01/week2-assignment.txt');
 
 console.log(sortAndCount(input)[0]);
 console.log(sortAndCount(input)[0][99999]);
