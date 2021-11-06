@@ -109,7 +109,7 @@ class Subset {
 /***************** TEST CASES *******************/
 
 // INPUT
-const parseData = require('../parseNestedData');
+const parseData = require('../parseData');
 const input = parseData('week4-assignment.txt', '\r\n');
 const edges = [];
 const vertices = [];

@@ -1,13 +1,17 @@
 const fs =  require('fs');
 const path = require('path');
 
-const parseData = (rawFilePath) => {
+const parseData = (rawFilePath, split, parseType = 'original') => {
   const nums = fs.readFileSync(`${module.parent.path}/${rawFilePath}`, 'utf-8');
-  const input = nums.split('\r\n');
+  const input = nums.split(split);
   input.pop();
 
-  for (let i = 0; i < input.length; i++) {
-    input[i] = Number(input[i]);
+  if (parseType !== 'original') {
+    for (let i = 0; i < input.length; i++) {
+      if (parseType === 'num') {
+        input[i] = Number(input[i]);
+      }
+    }
   }
 
   return input;
