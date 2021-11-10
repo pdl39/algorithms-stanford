@@ -5,15 +5,18 @@ const dijkstrasAlgorithm = (V, graph, src, arr = null) => {
   spDistances[src] = 0; // the source vertex has the shortest path distance to itself of 0.
 
   for (let i = 1; i < V; i++) {
+    // From the processed vertices, get the vertex with the min distance from source.
     const u = getMinDistVertex(V, confirmedSet, spDistances);
     confirmedSet[u] = true;
 
+    // For all neighboring vertices of u (all v's in the direct edges {u, v}) that are NOT yet processed, update its shortest path distance if its dijkstra's greedy criterion is less than the current shortest path distance for v as currently saved in the spDistances array.
     for (const edge of graph[u]) {
       const v = edge[0];
       const dist = edge[1];
-      const dijkstrasCriteria = spDistances[u] + dist;
+      const dijkstrasCriterion = spDistances[u] + dist;
+
       if (!confirmedSet[v]) {
-        spDistances[v] = Math.min(dijkstrasCriteria, spDistances[v]);
+        spDistances[v] = Math.min(dijkstrasCriterion, spDistances[v]);
       }
     }
   }
@@ -28,6 +31,7 @@ const dijkstrasAlgorithm = (V, graph, src, arr = null) => {
   return spDistances;
 }
 
+// Helper function to get the min distance vertex from the confirmed/processed vertices.
 const getMinDistVertex = (V, confirmedSet, spDistances) => {
   let minDistance = Infinity;
   let minDistVertex = null;
