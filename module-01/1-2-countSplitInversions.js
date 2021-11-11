@@ -55,7 +55,7 @@ const countSplitInversions = (input, sortedLeftArr, sortedRightArr) => {
 
 
 const parseData = require('../parseData');
-const rawDataFile = 'week2-assignment.txt';
+const rawDataFile = '1-2-countSplitInversions.txt';
 
 const input = parseData(rawDataFile, '\r\n', 'num');
 

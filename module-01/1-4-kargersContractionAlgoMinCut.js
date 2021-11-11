@@ -14,11 +14,11 @@ const kargerContractionAlgo = (graph) => {
     // pick a random edge index to select a uniformly random edge.
     const i = Math.floor(Math.random() * E);
 
-    // find the set of vertices (super node) of each endpoint of the selected edge
+    // find the set of vertices (super nodes) in which each endpoint vertex of the selected edge belongs
     const subset1 = find(subsets, edges[i].u);
     const subset2 = find(subsets, edges[i].v);
 
-    // if the two vertices hbelong to the same set, it means there is a cycle, or a self-loop.
+    // if the two vertices belong to the same set, it means there is a cycle, or a self-loop.
     // we want to delete any self-loops, so we will just skip the current edge (don't bother contracting).
     if (subset1 === subset2) {
       continue;
@@ -54,20 +54,20 @@ const kargerContractionAlgo = (graph) => {
   return [cuts, cutEdges];
 }
 
+// Find will return the subset (the root/parent vertex) in which the vertex belongs.
 const find = (subsets, vertex) => {
-  const i = vertex;
-  if (subsets[i].parent !== vertex) {
-    subsets[i].parent = find(subsets, subsets[i].parent);
+  if (subsets[vertex].parent !== vertex) {
+    subsets[vertex].parent = find(subsets, subsets[vertex].parent);
   }
 
-  return subsets[i].parent;
+  return subsets[vertex].parent;
 }
 
 const union = (subsets, subset1, subset2) => {
   const v1Root = find(subsets, subset1);
   const v2Root = find(subsets, subset2);
 
-  // Attach the subset with fewer vertices under the root of the subset with more vertices (higher rank).
+  // Attach the subset with fewer vertices under the root of the subset with more vertices (higher rank subset retains the root).
   // Union by Rank.
   if (subsets[v1Root].rank < subsets[v2Root].rank) {
     subsets[v1Root].parent = v2Root;
@@ -101,8 +101,8 @@ class Edge {
 // a subset of vertices to be used in union-find operations
 class Subset {
   constructor(parent, rank) {
-    this.parent = parent;
-    this.rank = rank;
+    this.parent = parent; // parent is the root vertex that wil represent the whole subset
+    this.rank = rank; // we keep rank to do union by rank
   }
 }
 
@@ -110,7 +110,7 @@ class Subset {
 
 // INPUT
 const parseData = require('../parseData');
-const input = parseData('week4-assignment.txt', '\r\n');
+const input = parseData('1-4-kargersContractionAlgoMinCut.txt', '\r\n');
 const edges = [];
 const vertices = [];
 
@@ -136,7 +136,7 @@ const graph0 = new Graph(8, 10, vertices0, edges0);
 
 
 // TC1
-const tc1 = parseData('week4-tc1.txt', '\n');
+const tc1 = parseData('1-4-kargersContractionAlgoMinCut-tc1.txt', '\n');
 const edges1 = [];
 const vertices1 = [];
 
@@ -154,7 +154,7 @@ const graph1 = new Graph(vertices1.length, edges1.length, vertices1, edges1);
 
 
 // TC2
-const tc2 = parseData('week4-tc2.txt', '\n');
+const tc2 = parseData('1-4-kargersContractionAlgoMinCut-tc2.txt', '\n');
 const edges2 = [];
 const vertices2 = [];
 
@@ -172,7 +172,7 @@ const graph2 = new Graph(vertices2.length, edges2.length, vertices2, edges2);
 
 
 // TC3
-const tc3 = parseData('week4-tc3.txt', '\n');
+const tc3 = parseData('1-4-kargersContractionAlgoMinCut-tc3.txt', '\n');
 const edges3 = [];
 const vertices3 = [];
 
@@ -190,7 +190,7 @@ const graph3 = new Graph(vertices3.length, edges3.length, vertices3, edges3);
 
 
 // TC4
-const tc4 = parseData('week4-tc4.txt', '\n');
+const tc4 = parseData('1-4-kargersContractionAlgoMinCut-tc4.txt', '\n');
 const edges4 = [];
 const vertices4 = [];
 
@@ -208,7 +208,7 @@ const graph4 = new Graph(vertices4.length, edges4.length, vertices4, edges4);
 
 
 // TC5
-const tc5 = parseData('week4-tc5.txt', '\n');
+const tc5 = parseData('1-4-kargersContractionAlgoMinCut-tc5.txt', '\n');
 const edges5 = [];
 const vertices5 = [];
 
