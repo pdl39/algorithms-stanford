@@ -38,8 +38,10 @@ const scheduling = (jobs, greedyMethod = 'ratio') => { // greedyMethod is either
   return runningWeightedSum;
 }
 
+
+// ASSIGNMENT INPUT
 const parseData = require('../parseData');
-const jobs = parseData('./scheduling.txt', '\n');
+const jobs = parseData('./3-1-scheduling.txt', '\n');
 
 jobs[0] = Number(jobs[0]);
 for (let i = 1; i < jobs.length; i++) {
@@ -50,6 +52,5 @@ for (let i = 1; i < jobs.length; i++) {
 
 jobs.shift();
 
-// console.log(jobs);
 console.log(scheduling(jobs, 'diff'));
 console.log(scheduling(jobs, 'ratio'));

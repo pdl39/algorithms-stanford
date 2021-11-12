@@ -48,9 +48,8 @@ const binarySearch = (arr, key) => {
 }
 
 
+// ASSIGNMENT INPUT
 const parseData = require('../parseData');
 const nums = parseData('./2-4-twoSumVariation.txt', '\n', 'num');
-
-// console.log(nums);
 
 console.log(twoSumVariant(nums))

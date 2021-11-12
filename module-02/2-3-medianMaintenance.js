@@ -39,7 +39,7 @@ const sumOfMediansModK = (arr) => {
 }
 
 
-// TEST
+// ASSIGNMENT INPUT
 const parseData = require('../parseData');
 const stream = parseData('./2-3-medianMaintenance.txt', '\n', 'num');
 
