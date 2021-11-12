@@ -1,18 +1,18 @@
 const scheduling = (jobs, greedyMethod = 'ratio') => { // greedyMethod is either 'diff' or 'ratio'
-  const scheduling1 = greedyMethod !== 'diff'
+  let scheduling1 = greedyMethod !== 'diff'
   ? null
   : jobs.sort((a, b) => {
     const aDiff = a[0] - a[1];
     const bDiff = b[0] - b[1];
     if (aDiff === bDiff) {
-      return b - a;
+      return b[0] - a[0];
     }
     else {
       return bDiff - aDiff;
     }
   });
 
-  const scheduling2 = greedyMethod !== 'ratio'
+  let scheduling2 = greedyMethod !== 'ratio'
   ? null
   : jobs.sort((a, b) => {
     aRatio = a[0]/a[1];
