@@ -97,7 +97,7 @@ class Scc {
 // Due to huge input size, running the function with default node v8 stack size will result in stack overflow error --> in the terminal, run the program with "node --stack-size=8100 <filename>.js"
 // --stack-size=8100 seems to be around the max we can get without segmentation fault. 8100 seems to give just a little over 100,000 call stack limit (based on node v.16.13.0).
 const parseData = require('../parseData');
-const edges = parseData('week1.txt', '\n');
+const edges = parseData('2-1-computeScc.txt', '\n');
 
 // final parsing for edges.
 for (let i = 0; i < edges.length; i++) {
@@ -115,7 +115,7 @@ console.log(computeScc(875714, edges));
 
 /************************TEST CASES************************/
 // tc1
-const edges1 = parseData('week1-tc1.txt', '\n');
+const edges1 = parseData('2-1-computeScc-tc1.txt', '\n');
 
 // final parsing for edges1.
 for (let i = 0; i < edges1.length; i++) {
@@ -131,7 +131,7 @@ for (let i = 0; i < edges1.length; i++) {
 
 
 // tc2
-const edges2 = parseData('week1-tc2.txt', '\n');
+const edges2 = parseData('2-1-computeScc-tc2.txt', '\n');
 
 // final parsing for edges2.
 for (let i = 0; i < edges2.length; i++) {
@@ -148,7 +148,7 @@ for (let i = 0; i < edges2.length; i++) {
 
 
 // tc3
-const edges3 = parseData('week1-tc3.txt', '\n');
+const edges3 = parseData('2-1-computeScc-tc3.txt', '\n');
 
 // final parsing for edges3.
 for (let i = 0; i < edges3.length; i++) {
@@ -163,7 +163,7 @@ for (let i = 0; i < edges3.length; i++) {
 // console.log(computeScc(8, edges3));
 
 // tc4
-const edges4 = parseData('week1-tc4.txt', '\n');
+const edges4 = parseData('2-1-computeScc-tc4.txt', '\n');
 
 // final parsing for edges4.
 for (let i = 0; i < edges4.length; i++) {
@@ -178,7 +178,7 @@ for (let i = 0; i < edges4.length; i++) {
 // console.log(computeScc(8, edges4));
 
 // tc5
-const edges5 = parseData('week1-tc5.txt', '\n');
+const edges5 = parseData('2-1-computeScc-tc5.txt', '\n');
 
 // final parsing for edges5.
 for (let i = 0; i < edges5.length; i++) {

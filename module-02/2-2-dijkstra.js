@@ -49,7 +49,7 @@ const getMinDistVertex = (V, confirmedSet, spDistances) => {
 
 // ASSIGNMENT INPUT
 const parseData = require('../parseData');
-const edges = parseData('./week2.txt', '\r\n');
+const edges = parseData('./2-2-dijkstra.txt', '\r\n');
 
 // final parsing for edges.
 for (let i = 0; i < edges.length; i++) {

@@ -46,7 +46,7 @@ const partition = (arr, l, r, pivotSelection) => {
 
 
 const parseData = require('../parseData');
-const rawDataFile = 'week3-assignment.txt';
+const rawDataFile = '1-3-quickSortComparisons.txt';
 
 // #1
 let input = parseData(rawDataFile, '\r\n', 'num');

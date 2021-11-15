@@ -4,6 +4,7 @@ const twoSumVariant = (nums) => {
 
   const seenTargets = new Set();
 
+  const start = Date.now();
   for (let target = -10000; target < 10001; target++) {
     console.log({target});
     for (let i = 0; i < sorted.length; i++) {
@@ -17,6 +18,9 @@ const twoSumVariant = (nums) => {
       }
     }
   }
+
+  const end = Date.now();
+  console.log(`Runtime: ${(end - start)/1000}s`);
 
   return seenTargets.size;
 }
@@ -44,9 +48,8 @@ const binarySearch = (arr, key) => {
 }
 
 
+// ASSIGNMENT INPUT
 const parseData = require('../parseData');
-const nums = parseData('./week4.txt', '\n', 'num');
-
-// console.log(nums);
+const nums = parseData('./2-4-twoSumVariation.txt', '\n', 'num');
 
 console.log(twoSumVariant(nums))
