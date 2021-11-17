@@ -1,12 +1,74 @@
-const floydWarshall = (V, vertices, edges) => {
+const floydWarshall = (V, edges) => {
+  const n = V + 1;
   // First, prepare the base matrix A for only direct edges between each vertex of the graph.
-  //
-  const A = new Array(V + 1).fill(null).map(() => new Array(V + 1).fill(Infinity));
-  for (let i = 1; i < V + 1; i++) {
-    for (let j = 1; j < V + 1; j++) {
-      A[i, j] = edges[i][j]['dist'] ?? Infinity;
+  const A = new Array(n).fill(null).map(() => new Array(n).fill(Infinity));
+  for (let i = 1; i < n; i++) {
+    for (let j = 1; j < n; j++) {
+      if (i === j) { // Self loops.
+        A[i][j] = 0;
+      }
+      else {
+        A[i][j] = edges[i][j] ?? Infinity;
+      }
     }
   }
+
+  // Now, we will go through all intermediate vertices {1, 2, ..., k} for all edge{i,j}.
+  for (let k = 1; k < n; k++) {
+    for (let i = 1; i < n; i++) {
+      for (let j = 1; j < n; j++) {
+        A[i][j] = Math.min(A[i][j], A[i][k] + A[k][j]);
+      }
+    }
+  }
+
+  // Check for negative cycle. If any of the diagonal slots (i = j) in A has a negative value, we have a negative cycle.
+  const shortestOfShortest = {
+    dist: Infinity,
+    path: [],
+    hasNegativeCycle: false
+  }
+  for (let i = 1; i < n; i++) {
+    for (let j = 1; j < n; j++) {
+      if (i === j) {
+        if (A[i][j] < 0) {
+          shortestOfShortest.hasNegativeCycle = true;
+          return shortestOfShortest;
+        }
+      }
+      else {
+        if (A[i][j] < shortestOfShortest.dist) {
+          shortestOfShortest.dist = A[i][j];
+          shortestOfShortest.path = [i, j];
+        }
+      }
+    }
+  }
+
+  return shortestOfShortest;
+}
+
+// Compute the shortest of the shortest out of all graphs: 'findShortestOfAllShortest' takes as input an array of graphs, each of which is a two-item array of V and edges.
+const findShortestOfAllShortest = (graphs) => {
+  let theMin = {
+    dist: Infinity,
+    path: [],
+    error: 'All graphs have negative cycle. No solution was computed.'
+  };
+
+  graphs.forEach((graph, idx) => {
+    const shortest = floydWarshall(graph[0], graph[1]);
+    if (!shortest.hasNegativeCycle) {
+      theMin = shortest;
+      theMin['g'] = idx + 1;
+    }
+  });
+
+  if (theMin['error']) {
+    throw new Error(theMin.error);
+  }
+
+  return theMin;
 }
 
 
@@ -26,7 +88,6 @@ const edgeNcosts = parseData('./4-1-floyd-warshall-g1.txt', '\n');
 const V1 = Number(edgeNcosts[0].split(' ')[0]);
 const E1 = Number(edgeNcosts[0].split(' ')[1]);
 const edges1 = {};
-let vertices1 = new Set();
 
 
 for (let i = 1; i < edgeNcosts.length; i++) {
@@ -41,10 +102,7 @@ for (let i = 1; i < edgeNcosts.length; i++) {
   }
 
   edges1[u][v] = dist;
-  vertices1.add(u);
-  vertices1.add(v);
 }
-vertices1 = Array.from(vertices1);
 
 
 // g2
@@ -52,7 +110,6 @@ const edgeNcosts2 = parseData('./4-1-floyd-warshall-g2.txt', '\n');
 const V2 = Number(edgeNcosts2[0].split(' ')[0]);
 const E2 = Number(edgeNcosts2[0].split(' ')[1]);
 const edges2 = {};
-let vertices2 = new Set();
 
 
 for (let i = 1; i < edgeNcosts2.length; i++) {
@@ -67,10 +124,7 @@ for (let i = 1; i < edgeNcosts2.length; i++) {
   }
 
   edges2[u][v] = dist;
-  vertices2.add(u);
-  vertices2.add(v);
 }
-vertices2 = Array.from(vertices2);
 
 
 // g3
@@ -78,7 +132,6 @@ const edgeNcosts3 = parseData('./4-1-floyd-warshall-g3.txt', '\n');
 const V3 = Number(edgeNcosts3[0].split(' ')[0]);
 const E3 = Number(edgeNcosts3[0].split(' ')[1]);
 const edges3 = {};
-let vertices3 = new Set();
 
 
 for (let i = 1; i < edgeNcosts3.length; i++) {
@@ -93,10 +146,7 @@ for (let i = 1; i < edgeNcosts3.length; i++) {
   }
 
   edges3[u][v] = dist;
-  vertices3.add(u);
-  vertices3.add(v);
 }
-vertices3 = Array.from(vertices3);
 
 // edges (adjacency list) data structure:
 /*
@@ -119,7 +169,16 @@ vertices3 = Array.from(vertices3);
 // console.log(edges3[334]);
 
 // RUN
-// console.log(floydWarshall(V1, vertices1, edges1));
-// console.log(floydWarshall(V2, vertices2, edges2));
-// console.log(floydWarshall(V3, vertices3, edges3));
+// console.log(floydWarshall(V1, edges1));
+// console.log(floydWarshall(V2, edges2));
+// console.log(floydWarshall(V3, edges3));
+
+const graphs = [
+  [V1, edges1],
+  [V2, edges2],
+  [V3, edges3]
+]
+
+// RUN
+console.log(findShortestOfAllShortest(graphs));
 
