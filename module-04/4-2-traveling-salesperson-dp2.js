@@ -33,14 +33,29 @@ j -> a destination vertex
 
 // 'cities' are 1 indexed (NOT 0 indexed).
 const tspDp = (V, cities, source) => {
-  const numCities = V - source + 1;
-  const vertices = [];
-  for (let v = 1; v < numCities + 1; v++) {
-    vertices.push(v);
+
+  const rawSubsets = subsets(source, V).sort((a, b) => a.size - b.size);
+  const S = [];
+
+  // Parse to get all subsets S that contain 1 (in order of subset length).
+  for (let i = 0; i < rawSubsets.length; i++) {
+    if (rawSubsets[i].has(source)) {
+      S.push(rawSubsets[i]);
+    }
   }
-  console.log(5 & (1 << 0))
-  console.log({vertices})
-  subsetsBitMask(vertices, numCities);
+
+  console.log({S});
+
+  const A = new Array(S.length).fill([]).map(() => new Array(V + 1).fill(Infinity));
+
+  for (let i = 0; i < S.length; i++) {
+    for (let j = source + 1; j < V - source + 2; j++) {
+      let p = Infinity;
+      if (S[i].has(j)) {
+
+      }
+    }
+  }
 }
 
 const euclideanDist = (coord1, coord2) => {
@@ -48,33 +63,21 @@ const euclideanDist = (coord1, coord2) => {
 }
 
 // Get an array sets of all subsets (2^(n - source)) from source to n.
-const subsetsBitMask = (arr, n) => {
-  const total = (1 << n); // 2^n
-  console.log({total});
-  const S = [];
+const subsets = (source, n) => {
+  const subsets = [new Set()]; // begin with an empty subset.
 
-  for (let mask = 0; mask < total; mask++) { // Create mask for all possible subsets.
-    const subset = [];
+  for (let i = source; i < n + 1; i++) {
+    const subsetsLen = subsets.length;
 
-    for (let i = 0; i < n; i++) { // for each bit index of subset mask,
-      // create a bit mask for the ith bit of the subset mask. Let's have the least significant bit be 0th bit (vs 1st bit). If the ith bit of mask is set to 1, we know the mask includes the ith index element of arr. So we add the ith element of arr to our current subset.
-      if (mask & (1 << i)) {
-        subset.push(arr[i]);
-      }
-    }
-
-    if (subset[0] === 1) {
-      S.push(subset);
+    // add the new number to each copy of the existing subsets
+    for (let j = 0; j < subsetsLen; j++) {
+      const subsetsCopy = new Set(subsets[j]);
+      subsetsCopy.add(i);
+      subsets.push(subsetsCopy);
     }
   }
-  console.log({S})
-  console.log(0b111)
-  console.log(1 << 0)
-  console.log(1 << 1)
-  console.log(1 << 2)
-  console.log(1 << 3)
 
-  return S;
+  return subsets;
 }
 
 

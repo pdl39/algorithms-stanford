@@ -31,53 +31,91 @@ j -> a destination vertex
 
 */
 
-// 'cities' are 1 indexed (NOT 0 indexed).
+// All arrays used in this function will be 0 indexed (e.g. city at 0 index = city 0, etc.).
 const tspDp = (V, cities, source) => {
-
-  const rawSubsets = subsets(source, V).sort((a, b) => a.size - b.size);
-  const S = [];
-
-  // Parse to get all subsets S that contain 1 (in order of subset length).
-  for (let i = 0; i < rawSubsets.length; i++) {
-    if (rawSubsets[i].has(source)) {
-      S.push(rawSubsets[i]);
-    }
+  const n = V - source;
+  const vertices = [];
+  for (let v = source; v < V; v++) {
+    vertices.push(v);
   }
+  const [S, keyMap] = subsetsBitMask(n);
 
-  console.log({S});
-
-  const A = new Array(S.length).fill([]).map(() => new Array(V + 1).fill(Infinity));
+  // Set up DP Table of subsets S and dest j.
+  const A = new Array(S.length).fill([]).map(() => new Array(n).fill(Infinity));
+  A[keyMap[1]][0] = 0; // Base case: if dest j = 1 && S = {1}, it's a self loop so path cost = 0.
 
   for (let i = 0; i < S.length; i++) {
-    for (let j = source + 1; j < V - source + 2; j++) {
-      let p = Infinity;
-      if (S[i].has(j)) {
+    // console.log({i}, S[i].subset.toString(2))
+    // Note: based on the boundary in S determined by m, all subsets being considered in each iteration have count = m.
+    for (let j = 1; j < n + 1; j++) { // for all j (bit) in S[i], where j != 0 (the 0th bit of subset mask = the source city the 0th element in the vertices array)
+      const jInS = S[i].subset & (1 << j);
+      if (!jInS) continue;
 
+      let minPathVal = Infinity;
+      for (let k = 0; k < n + 1; k++) { // among all k in S[i], where k != j, find the shortest path value from the city at bit 0 to city at bit j.
+        const kInS = S[i].subset & (1 << k);
+        if (kInS && k !== j) {
+          const Sminusj = S[i].subset - (1 << j);
+          const cityK = cities[vertices[k]];
+          const cityJ = cities[vertices[j]];
+
+          minPathVal = Math.min(minPathVal, A[keyMap[Sminusj]][k] + euclideanDist(cityK, cityJ));
+        }
+      }
+
+      A[keyMap[S[i].subset]][j] = minPathVal;
+      // console.log({i, j}, 'S[i]: ', S[i], 'min(S[i], j): ', A[keyMap[S[i].subset]][j]);
+    }
+  }
+
+  // Final loop over all final dest j's to get the final minimum path value by adding the final hop from each j back to the source city.
+  let finalMin = Infinity;
+  for (let j = 1; j < n; j++) {
+    const cityJ = cities[vertices[j]];
+    const sourceCity = cities[vertices[0]];
+    finalMin = Math.min(finalMin, A[S.length - 1][j] + euclideanDist(cityJ, sourceCity));
+  }
+
+  return finalMin;
+}
+
+
+// Get an array of all subsets (2^n - 1).
+const subsetsBitMask = (n) => {
+  const total = (1 << n); // 2^n --> total # of possible subsets.
+  const SbitArr = []; // An array of all subsets. Each subset will be in the form of an object with the the 'subset' property storing the bitmask of the subset and the 'count' property storing the # of elements included in the subset.
+  const keyMap = {}; // A mapping of subsetBitmask -> its position (index) in SbitArr.
+
+  for (let mask = 0; mask < total; mask++) { // Create mask for all possible subsets.
+    let subsetBitMask = 0; // a bitmask representing the contents of a subset: Each bitmask (when thought of as binary number) will have n digits, and the ith bit (with the lsb = 0 and i increasing from right to left) will correspond to the ith element of the input array (1 ith element is included and 0 if not).
+    let setCount = 0; // Store count of how many elements are in the subset.
+
+    for (let i = 0; i < n; i++) { // for each bit index of subset mask, check if the ith bit is set. Let's have the least significant bit be 0th bit (vs 1st bit). If the ith bit of mask is set to 1, we know the mask includes the ith index element of arr. So we add the ith element of arr to our current subset (Set the ith bit of subset bitmask to 1).
+      if (mask & (1 << i)) {
+        subsetBitMask |= (1 << i);
+        setCount++;
       }
     }
-  }
-}
 
-const euclideanDist = (coord1, coord2) => {
-  return Math.sqrt(((coord1[0] - coord2[0])**2) + ((coord1[1] - coord2[1])**2));
-}
-
-// Get an array sets of all subsets (2^(n - source)) from source to n.
-const subsets = (source, n) => {
-  const subsets = [new Set()]; // begin with an empty subset.
-
-  for (let i = source; i < n + 1; i++) {
-    const subsetsLen = subsets.length;
-
-    // add the new number to each copy of the existing subsets
-    for (let j = 0; j < subsetsLen; j++) {
-      const subsetsCopy = new Set(subsets[j]);
-      subsetsCopy.add(i);
-      subsets.push(subsetsCopy);
+    if (subsetBitMask & (1 << 0)) { // Only store subsets that contain the source vertex, which will be at the 0 index in the input array and thus at the 0th bit in the subset bitmask.
+      SbitArr.push({
+        subset: subsetBitMask,
+        count: setCount
+      });
     }
   }
 
-  return subsets;
+  const sortedSbitArr = SbitArr.sort((a, b) => a.count - b.count);
+  sortedSbitArr.forEach((s, idx) => {
+    keyMap[s.subset] = idx;
+  });
+
+  return [sortedSbitArr, keyMap];
+}
+
+// Get the dist between 2 cities.
+const euclideanDist = (coord1, coord2) => {
+  return Math.sqrt(((coord1[0] - coord2[0])**2) + ((coord1[1] - coord2[1])**2));
 }
 
 
@@ -86,18 +124,22 @@ const parseData = require('../parseData');
 const data = parseData('./4-2-traveling-salesperson-dp.txt', '\n');
 
 const numCities = Number(data[0]);
-const cities = new Array(numCities + 1).fill(null);
+const cities = new Array(numCities).fill(null);
 
 for (let i = 1; i < data.length; i++) {
   data[i] = data[i].split(' ');
   const x = parseFloat(data[i][0]);
   const y = parseFloat(data[i][1]);
 
-  cities[i] = [x, y];
+  cities[i - 1] = [x, y];
 }
 
 console.log({numCities, cities});
-console.log(euclideanDist(cities[1], cities[2]));
 
-console.log(tspDp(13, cities, 1));
-// console.log(tspDp(numCities, cities, 12));
+// RUN
+const cluster1Min = tspDp(13, cities, 0);
+const cluster2Min = tspDp(numCities, cities, 11);
+const duplicatePath = euclideanDist(cities[11], cities[12]);
+console.log({cluster1Min, cluster2Min, duplicatePath})
+console.log('Shortest TSP Tour distance: ', Math.floor(cluster1Min + cluster2Min - 2 * duplicatePath));
+
