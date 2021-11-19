@@ -23,12 +23,10 @@ Recurrence relation:
 L(S,j) = min{L(S-{j}, k) + c(k,j)}
 where k in S, k != j, and c(k,j) is the edge cost of the last hop (k -> j).
 
-L(S,j) = min(S - {k})
 Let v = 1,
 S = a subset of V that contains 1 and j,
 k = the intermediate vertex (in S) in the 1 -> j path that yields the shortest 1 -> k path + a final hop k -> j.
 j -> a destination vertex
-
 */
 
 // All arrays used in this function will be 0 indexed (e.g. city at 0 index = city 0, etc.).
@@ -45,7 +43,6 @@ const tspDp = (V, cities, source) => {
   A[keyMap[1]][0] = 0; // Base case: if dest j = 1 && S = {1}, it's a self loop so path cost = 0.
 
   for (let i = 0; i < S.length; i++) {
-    // console.log({i}, S[i].subset.toString(2))
     // Note: based on the boundary in S determined by m, all subsets being considered in each iteration have count = m.
     for (let j = 1; j < n + 1; j++) { // for all j (bit) in S[i], where j != 0 (the 0th bit of subset mask = the source city the 0th element in the vertices array)
       const jInS = S[i].subset & (1 << j);
@@ -64,7 +61,6 @@ const tspDp = (V, cities, source) => {
       }
 
       A[keyMap[S[i].subset]][j] = minPathVal;
-      // console.log({i, j}, 'S[i]: ', S[i], 'min(S[i], j): ', A[keyMap[S[i].subset]][j]);
     }
   }
 
@@ -137,9 +133,17 @@ for (let i = 1; i < data.length; i++) {
 console.log({numCities, cities});
 
 // RUN
-const cluster1Min = tspDp(13, cities, 0);
-const cluster2Min = tspDp(numCities, cities, 11);
-const duplicatePath = euclideanDist(cities[11], cities[12]);
-console.log({cluster1Min, cluster2Min, duplicatePath})
-console.log('Shortest TSP Tour distance: ', Math.floor(cluster1Min + cluster2Min - 2 * duplicatePath));
+const run = require('../run');
+
+const tspDpHack = (numCities, cities, cluster1Source, cluster2Source) => {
+  const cluster1Min = tspDp(13, cities, cluster1Source);
+  const cluster2Min = tspDp(numCities, cities, cluster2Source);
+  const duplicatePath = euclideanDist(cities[cluster2Source], cities[cluster2Source + 1]);
+
+  console.log({cluster1Min, cluster2Min, duplicatePath})
+  return cluster1Min + cluster2Min - 2 * duplicatePath;
+}
+
+run(() => tspDpHack(numCities, cities, 0, 11), 'Shortest TSP Tour distance');
+run(() => tspDp(numCities, cities, 0), 'Shortest TSP Tour distance');
 
